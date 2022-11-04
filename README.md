@@ -58,16 +58,16 @@ check_5_x_update_sql
 
 ## 运行截图
 
-![](assets/16675539000970.jpg)
+![](images/ThinkPhpScan_1.jpg)
 
 单Url扫描：
-![](assets/16675543342666.jpg)
+![](images/ThinkPhpScan_2.jpg)
 
 批量扫描：
-![](assets/16675546805419.jpg)
+![](images/ThinkPhpScan_3.jpg)
 
 ## Team
-
+![](images/xxx)
 
 ## 免责声明
 
