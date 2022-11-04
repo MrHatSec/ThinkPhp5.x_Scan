@@ -67,7 +67,7 @@ check_5_x_update_sql
 ![](images/ThinkPhpScan_3.jpg)
 
 ## Team
-![](images/xxx)
+![](images/vx.png)
 
 ## 免责声明
 
