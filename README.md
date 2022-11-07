@@ -66,6 +66,11 @@ check_5_x_update_sql
 批量扫描：
 ![](images/ThinkPhpScan_3.jpg)
 
+## 更新记录
+[+] 2022/11/07<br>
+&nbsp;&nbsp;&nbsp;&nbsp;1.优化代码<br>
+&nbsp;&nbsp;&nbsp;&nbsp;2.增加扫描结果输出(默认不输出结果)
+
 ## Team
 ![](images/vx.png)
 
