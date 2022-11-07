@@ -26,6 +26,7 @@ func Flag(info *CmdOptions) {
 	printBanner()
 	flag.StringVar(&info.Url, "u", "http://127.0.0.1", "Url")
 	flag.StringVar(&info.FileName, "f", "", "FileName")
+	flag.StringVar(&info.OutFileName, "o", "", "out put 默认不保存扫描结果")
 	flag.IntVar(&info.Thread, "t", 10, "线程,默认10")
 
 	flag.Parse()
