@@ -11,6 +11,7 @@ import (
 
 type Scan struct {
 	result []string
+	lock   sync.Mutex
 }
 
 // thinkphp5.0.x路由过滤不严谨rce漏洞
@@ -31,7 +32,9 @@ func (s *Scan) check_5_x_route_rce_get(url string) {
 			if strings.Contains(response, "PHP Version") {
 				defer wg.Done()
 				fmt.Printf("[*] %v 存在thinkphp5.0.x路由过滤不严谨rce漏洞\n", url)
+				s.lock.Lock()
 				s.result = append(s.result, fmt.Sprintf("[*] %v 存在thinkphp5.0.x路由过滤不严谨rce漏洞", url))
+				s.lock.Unlock()
 				return
 			} else {
 				defer wg.Done()
@@ -63,7 +66,9 @@ func (s *Scan) check_5_x_construct_rce_post(url string) {
 			if strings.Contains(response, "PHP Version") {
 				defer wg.Done()
 				fmt.Printf("[*] %v 存在thinkphp5.0.x路由过滤不严谨rce漏洞(post)\n", url)
+				s.lock.Lock()
 				s.result = append(s.result, fmt.Sprintf("[*] %v 存在thinkphp5.0.x路由过滤不严谨rce漏洞(post)", url))
+				s.lock.Unlock()
 				//fmt.Println("true")
 				return
 			} else {
@@ -87,7 +92,9 @@ func (s *Scan) check_5_x_driver_rce(url string) {
 		response := common.GetReq(payload)
 		if strings.Contains(response, "PHP Version") {
 			fmt.Printf("[*] %v 存在thinkphp5_driver_rce漏洞\n", url)
+			s.lock.Lock()
 			s.result = append(s.result, fmt.Sprintf("[*] %v 存在thinkphp5_driver_rce漏洞", url))
+			s.lock.Unlock()
 			return
 		} else {
 			continue
@@ -103,7 +110,9 @@ func (s *Scan) Check_5_x_showid_rce(url string) {
 	response := common.GetReq(url + poc)
 	if strings.Contains(response, "PHP Version") {
 		fmt.Printf("[*] %v 存在thinkphp5_showid_rce漏洞\n", url)
+		s.lock.Lock()
 		s.result = append(s.result, fmt.Sprintf("[*] %v 存在thinkphp5_showid_rce漏洞", url))
+		s.lock.Unlock()
 		return
 	} else {
 		fmt.Printf("[-] %v 不存在thinkphp5_showid_rce漏洞\n", url)
@@ -126,7 +135,9 @@ func (s *Scan) check_5_x_request_input_rce(url string) {
 			if strings.Contains(response, "PHP Version") {
 				defer wg.Done()
 				fmt.Printf("[*] %v 存在thinkphp5_request_input_rce漏洞\n", url)
+				s.lock.Lock()
 				s.result = append(s.result, fmt.Sprintf("[*] %v 存在thinkphp5_request_input_rce漏洞", url))
+				s.lock.Unlock()
 				return
 			} else {
 				defer wg.Done()
@@ -155,7 +166,9 @@ func (s *Scan) check_5_x_construct_other(url string) {
 			if strings.Contains(response, "PHP Version") {
 				defer wg.Done()
 				fmt.Printf("[*] %v 存在thinkphp5.x_construct_rce漏洞(post型)\n", url)
+				s.lock.Lock()
 				s.result = append(s.result, fmt.Sprintf("[*] %v 存在thinkphp5.x_construct_rce漏洞(post型)", url))
+				s.lock.Unlock()
 				return
 			} else {
 				defer wg.Done()
@@ -182,7 +195,9 @@ func (s *Scan) check_5_x_template_driver_rce(url string) {
 			if strings.Contains(common.GetReq(url+"/iceberg.php"), "PHP Version") {
 				defer wg.Done()
 				fmt.Printf("[*] %v 存在thinkphp5.x_template_driver漏洞\n", url)
+				s.lock.Lock()
 				s.result = append(s.result, fmt.Sprintf("[*] %v 存在thinkphp5.x_template_driver漏洞", url))
+				s.lock.Unlock()
 				return
 			} else {
 				defer wg.Done()
@@ -200,7 +215,9 @@ func (s *Scan) check_5_x_lite_code_rce(url string) {
 	response := common.GetReq(pocUrl)
 	if strings.Contains(response, "PHP Version") {
 		fmt.Printf("[*] %v 存在thinkphp5_lite_code_rce漏洞\n", url)
+		s.lock.Lock()
 		s.result = append(s.result, fmt.Sprintf("[*] %v 存在thinkphp5_lite_code_rce漏洞", url))
+		s.lock.Unlock()
 		return
 	} else {
 		fmt.Printf("[-] %v 不存在thinkphp5_lite_code_rce漏洞\n", url)
@@ -214,7 +231,9 @@ func (s *Scan) check_5_x_cache_rce(url string) {
 	response := common.PostReq(pocUrl, pocData)
 	if strings.Contains(response, "iceberg-N") {
 		fmt.Printf("[*] %v 存在thinkphp5.x_cache_rce漏洞\n", url)
+		s.lock.Lock()
 		s.result = append(s.result, fmt.Sprintf("[*] %v 存在thinkphp5.x_cache_rce漏洞", url))
+		s.lock.Unlock()
 		return
 	} else {
 		fmt.Printf("[-] %v 不存在thinkphp5.x_cache_rce漏洞\n", url)
@@ -233,9 +252,15 @@ func (s *Scan) check_5_0_x_db(url string) {
 	dbPass := common.GetReq(payload_pass)
 	if dbUser != "" && dbPass != "" && len(dbUser) <= 100 {
 		fmt.Printf("[*] %v 存在thinkphp5.x数据库泄露\n", url)
+		s.lock.Lock()
 		s.result = append(s.result, fmt.Sprintf("[*] %v 存在thinkphp5.x数据库泄露", url))
+		s.lock.Unlock()
+		s.lock.Lock()
 		s.result = append(s.result, fmt.Sprintf("[*] 数据库账号: %v", dbUser))
+		s.lock.Unlock()
+		s.lock.Lock()
 		s.result = append(s.result, fmt.Sprintf("[*] 数据库密码: %v", dbPass))
+		s.lock.Unlock()
 		return
 	} else {
 		fmt.Printf("[-] %v 不存在thinkphp5.x数据库泄露\n", url)
@@ -253,7 +278,9 @@ func (s *Scan) check_5_x_sql(url string) {
 		response := common.GetReq(pocUrl)
 		if strings.Contains(response, "69636562657267") {
 			fmt.Printf("[*] %v 存在thinkphp5.xSQL注入漏洞\n", url)
+			s.lock.Lock()
 			s.result = append(s.result, fmt.Sprintf("[*] %v 存在thinkphp5.xSQL注入漏洞", url))
+			s.lock.Unlock()
 			return
 		} else {
 			fmt.Printf("[-] %v 不存在thinkphp5.xSQL注入漏洞\n", url)
@@ -272,7 +299,9 @@ func (s *Scan) check_5_x_xff_sql(url string) {
 	response := common.ZGetReq(pocUrl, headers)
 	if strings.Contains(response, "69636562657267") {
 		fmt.Printf("[*] %v 存在thinkphp5.xXFF头SQL注入漏洞\n", url)
+		s.lock.Lock()
 		s.result = append(s.result, fmt.Sprintf("[*] %v 存在thinkphp5.xXFF头SQL注入漏洞", url))
+		s.lock.Unlock()
 		return
 	} else {
 		fmt.Printf("[-] %v 不存在thinkphp5.xXFF头SQL注入漏洞\n", url)
@@ -293,9 +322,11 @@ func (s *Scan) check_5_x_time_sql(url string) {
 	startTime := time.Now()
 	common.ZPostReq(pocUrl, poc, headers)
 	endTime := time.Since(startTime)
-	if endTime >= 10 {
+	if endTime >= time.Second*10 {
 		fmt.Printf("[*] %v 存在thinkphp5.x时间注入漏洞\n", url)
+		s.lock.Lock()
 		s.result = append(s.result, fmt.Sprintf("[*] %v 存在thinkphp5.x时间注入漏洞", url))
+		s.lock.Unlock()
 		return
 	} else {
 		fmt.Printf("[-] %v 不存在thinkphp5.x时间注入漏洞\n", url)
@@ -309,7 +340,9 @@ func (s *Scan) check_5_x_ids_sql(url string) {
 	response := common.GetReq(pocUrl)
 	if strings.Contains(response, "69636562657267") {
 		fmt.Printf("[*] %v 存在thinkphp5.x_ids_SQL注入漏洞\n", url)
+		s.lock.Lock()
 		s.result = append(s.result, fmt.Sprintf("[*] %v 存在thinkphp5.x_ids_SQL注入漏洞", url))
+		s.lock.Unlock()
 		return
 	} else {
 		fmt.Printf("[-] %v 不存在thinkphp5.x_ids_SQL注入漏洞\n", url)
@@ -323,7 +356,9 @@ func (s *Scan) check_5_x_orderid_sql(url string) {
 	response := common.GetReq(pocUrl)
 	if strings.Contains(response, "69636562657267") {
 		fmt.Printf("[*] %v 存在thinkphp5.x_orderid_SQL注入漏洞\n", url)
+		s.lock.Lock()
 		s.result = append(s.result, fmt.Sprintf("[*] %v 存在thinkphp5.x_orderid_SQL注入漏洞", url))
+		s.lock.Unlock()
 		return
 	} else {
 		fmt.Printf("[-] %v 不存在thinkphp5.x_orderid_SQL注入漏洞\n", url)
@@ -337,7 +372,9 @@ func (s *Scan) check_5_x_update_sql(url string) {
 	response := common.GetReq(pocUrl)
 	if strings.Contains(response, "69636562657267") {
 		fmt.Printf("[*] %v 存在thinkphp5.x_update_SQL注入漏洞\n", url)
+		s.lock.Lock()
 		s.result = append(s.result, fmt.Sprintf("[*] %v 存在thinkphp5.x_update_SQL注入漏洞", url))
+		s.lock.Unlock()
 		return
 	} else {
 		fmt.Printf("[-] %v 不存在thinkphp5.x_update_SQL注入漏洞\n", url)
@@ -345,45 +382,52 @@ func (s *Scan) check_5_x_update_sql(url string) {
 }
 
 func StartScan(info common.CmdOptions) {
+	var wg sync.WaitGroup
+	var tasklist = make(chan string, 1)
 	scan := Scan{}
 	if info.Url != "" && info.Url != "http://127.0.0.1" {
 		fmt.Println("开始扫描:")
 		startTime := time.Now()
-		scan.check_5_x_route_rce_get(info.Url)
-		scan.check_5_x_construct_rce_post(info.Url)
-		scan.check_5_x_driver_rce(info.Url)
-		scan.Check_5_x_showid_rce(info.Url)
-		scan.check_5_x_request_input_rce(info.Url)
-		scan.check_5_x_construct_other(info.Url)
-		scan.check_5_x_template_driver_rce(info.Url)
-		scan.check_5_x_lite_code_rce(info.Url)
-		scan.check_5_x_cache_rce(info.Url)
-		scan.check_5_0_x_db(info.Url)
-		scan.check_5_x_sql(info.Url)
-		scan.check_5_x_xff_sql(info.Url)
-		scan.check_5_x_time_sql(info.Url)
-		scan.check_5_x_ids_sql(info.Url)
-		scan.check_5_x_orderid_sql(info.Url)
-		scan.check_5_x_update_sql(info.Url)
+		tasklist <- strings.Replace(info.Url, " ", "", -1)
+		close(tasklist)
+		wg.Add(1)
+		go addScan(tasklist, &wg, &scan)
+		wg.Wait()
 		endTime := time.Since(startTime)
-
 		fmt.Println("\n存在漏洞链接:")
-		//fmt.Printf("%c[1;;32m%s%c[0m\n", 0x1B, "\n存在漏洞链接:", 0x1B)
-		// 去除重复数据
 		resultNew := utils.RemoveRepeatedElement(scan.result)
 		for _, result := range resultNew {
 			fmt.Println(result)
-			//fmt.Printf("%c[1;;32m%s%c[0m\n", 0x1B, result, 0x1B)
+			if info.OutFileName == "" {
+				continue
+			} else {
+				utils.OutFile(info.OutFileName, result)
+			}
+		}
+		if info.OutFileName != "" {
+			fmt.Printf("\n[*]结果输出保存到: %v", info.OutFileName)
+			fmt.Printf("\n[*]扫描结束，共耗时: %v\n", endTime)
+			return
+		} else {
+			fmt.Printf("\n[*]扫描结束，共耗时: %v\n", endTime)
+			return
 		}
 
-		fmt.Printf("\n[*]扫描结束，共耗时: %v\n", endTime)
 	}
+
 	if info.FileName != "" {
 		fmt.Println("开始批量扫描")
 		startTime := time.Now()
 		scan.scanAll(info)
 		endTime := time.Since(startTime)
-		fmt.Printf("\n[*]扫描结束，共耗时: %v\n", endTime)
+		if info.OutFileName != "" {
+			fmt.Printf("\n[*]结果输出保存到: %v", info.OutFileName)
+			fmt.Printf("\n[*]扫描结束，共耗时: %v\n", endTime)
+			return
+		} else {
+			fmt.Printf("\n[*]扫描结束，共耗时: %v\n", endTime)
+			return
+		}
 	}
 
 }
@@ -403,12 +447,16 @@ func (s *Scan) scanAll(info common.CmdOptions) {
 	wg.Wait()
 
 	fmt.Println("\n存在漏洞链接:")
-	//fmt.Printf("%c[1;;32m%s%c[0m\n", 0x1B, "\n存在漏洞链接:", 0x1B)
-	// 去除重复数据
 	resultNew := utils.RemoveRepeatedElement(s.result)
 	for _, result := range resultNew {
 		fmt.Println(result)
-		//fmt.Printf("%c[1;;32m%s%c[0m\n", 0x1B, result, 0x1B)
+		if info.OutFileName == "" {
+			return
+		} else {
+			s.lock.Lock()
+			utils.OutFile(info.OutFileName, result)
+			s.lock.Unlock()
+		}
 	}
 }
 
